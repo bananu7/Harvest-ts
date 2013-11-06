@@ -6,3 +6,33 @@
 span {
     font-style: italic
 }
+
+#sidebar {
+    position: absolute;
+    width: 300px;
+    height: 80%;
+    right: 10px;
+    top: 0px;
+
+    background-color: #63b7d3;
+
+    padding: 15px;
+}
+
+    #sidebar .Grid {
+        /*display: flex;*/
+    }
+
+    #sidebar .Grid-cell {
+        flex: 1 0 auto;
+    }
+
+    #sidebar .button {
+        background-color: #5599b0;
+        margin: 10px;
+        padding: 10px;
+    }
+
+        #sidebar .button:hover {
+            background-color: #488ca3;
+        }

@@ -18,15 +18,18 @@
   <ItemGroup>
     <Content Include="app.css" />
     <Content Include="default.htm" />
+    <Content Include="lib\gl-matrix.js" />
+    <Content Include="lib\jquery.js" />
     <Content Include="web.config" />
-    <Content Include="webgl-utils.js" />
+    <Content Include="lib\webgl-utils.js" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="app.ts" />
     <TypeScriptCompile Include="harvest.ts" />
     <TypeScriptCompile Include="drawer.ts" />
-    <None Include="WebGL.d.ts" />
-    <TypeScriptCompile Include="gl-matrix.d.ts" />
+    <None Include="lib\WebGL.d.ts" />
+    <TypeScriptCompile Include="lib\gl-matrix.d.ts" />
+    <TypeScriptCompile Include="lib\jquery.d.ts" />
   </ItemGroup>
   <ItemGroup>
     <None Include="web.Debug.config">

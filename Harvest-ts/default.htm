@@ -8,13 +8,18 @@
     <script src="drawer.js"></script>
     <script src="harvest.js"></script>
     <script src="app.js"></script>
-    <script src="gl-matrix.js"></script>
+    <script src="lib/gl-matrix.js"></script>
+    <script src="lib/jquery.js"></script>
 </head>
 <body>
     <h1>TypeScript HTML App</h1>
-
     <div id="content">
-        <canvas width="500" height="500" id="mainCanvas"></canvas>
+        <canvas width="1280" height="800" id="mainCanvas"></canvas>
+    </div>
+    <div id="sidebar">
+        <h1>Units</h1>
+        <div class="Grid" id="units-ui">
+        </div>
     </div>
 </body>
 </html>

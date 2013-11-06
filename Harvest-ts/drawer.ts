@@ -1,6 +1,6 @@
 // Interface
-///<reference path="WebGL.d.ts" />
-///<reference path="gl-matrix.d.ts" />
+///<reference path="lib/WebGL.d.ts" />
+///<reference path="lib/gl-matrix.d.ts" />
 
 class Point {
     constructor(public x: number, public y: number) { }
@@ -39,7 +39,7 @@ class WebGLDrawer implements IDrawer {
         this.VBO = gl.createBuffer();
         this.gl.bindBuffer(gl.ARRAY_BUFFER, this.VBO);
 
-        this.viewMatrix = mat4.ortho(0, 500, 500, 0, -1, 1);
+        this.viewMatrix = mat4.ortho(0, 1280, 800, 0, -1, 1);
 
         this.initShaders();
     }
