@@ -65,7 +65,7 @@ module Units {
         }
 
         draw() {
-            drawer.drawCircle(this.position, 10);
+            drawer.drawCircle(this.position, 10, new Color(0.314, 0.863, 0.471));
         }
         update() {
         }
@@ -79,7 +79,7 @@ module Units {
         }
 
         draw() {
-            drawer.drawCircle(this.position, 15);
+            drawer.drawCircle(this.position, 15, new Color(0.8, 0.8, 0.8));
         }
         update() {
         }

@@ -18,6 +18,12 @@ span {
 
     padding: 15px;
 }
+    #sidebar .money {
+        color: #ffd800;
+        /*font-size: 2em;*/
+        text-align: right;
+        float: right;
+    }
 
     #sidebar .Grid {
         /*display: flex;*/

@@ -13,11 +13,14 @@ class Color {
     constructor(public r: number, public g: number, public b: number, public a?: number) {
         this.a = a || 1.0;
     }
+
+    static white = new Color(1.0, 1.0, 1.0, 1.0);
+    static black = new Color(0.0, 0.0, 0.0, 1.0);
 }
 
 interface IDrawer {
-    drawCircle(center: Point, radius: number);
-    drawLine(a: Point, b: Point);
+    drawCircle(center: Point, radius: number, color?: Color);
+    drawLine(a: Point, b: Point, color?: Color);
 }
 
 class WebGLDrawer implements IDrawer {
@@ -27,9 +30,11 @@ class WebGLDrawer implements IDrawer {
         'void main(void) {' +
         '  gl_Position = viewMat * vec4(position, 0.0, 1.0);' +
         '}';
-    fragCode = 
+    fragCode =
+        'precision lowp float;' +
+        'uniform vec4 color;' +
         'void main(void) {' +
-        '   gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);' +
+        '   gl_FragColor = color;' +
         '}';
     shaderProgram: WebGLProgram;
     viewMatrix: Float32Array;
@@ -50,6 +55,11 @@ class WebGLDrawer implements IDrawer {
         var coordinatesVar = this.gl.getAttribLocation(this.shaderProgram, "position");
         this.gl.enableVertexAttribArray(coordinatesVar);
         this.gl.vertexAttribPointer(coordinatesVar, 2, this.gl.FLOAT, false, 0, 0);
+    }
+
+    private setShaderColor(color : Color) {
+        var colorLocation = this.gl.getUniformLocation(this.shaderProgram, "color");
+        this.gl.uniform4f(colorLocation, color.r, color.g, color.b, color.a);
     }
 
     private initShaders() {
@@ -81,9 +91,8 @@ class WebGLDrawer implements IDrawer {
         this.gl.uniformMatrix4fv(viewMatrixLocation, false, this.viewMatrix);
     }
 
-    drawCircle(center: Point, radius: number) {
+    drawCircle(center: Point, radius: number, color: Color = Color.white) {
         var circleData = [];
-
         var count = Math.max(8, radius / 2);
 
         for (var i = 0; i < count; ++i) {
@@ -99,16 +108,20 @@ class WebGLDrawer implements IDrawer {
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(circleData), this.gl.STREAM_DRAW);
 
         this.enableBindings();
+        this.setShaderColor(color);
 
         this.gl.drawArrays(this.gl.TRIANGLE_FAN, 0, count);
     }
 
-    drawLine(a: Point, b: Point) {
+    drawLine(a: Point, b: Point, color: Color = Color.white) {
+        color = color || Color.white;
+
         var lineData = [a.x, a.y, b.x, b.y];
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.VBO);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(lineData), this.gl.STREAM_DRAW);
 
         this.enableBindings();
+        this.setShaderColor(color);
 
         this.gl.drawArrays(gl.LINES, 0, 2);
     }
