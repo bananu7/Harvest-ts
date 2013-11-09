@@ -5,7 +5,11 @@
 class Point {
     constructor(public x: number, public y: number) { }
 
-    getDist(other : Point) { return Math.sqrt(this.x * this.x + this.y * this.y); }
+    getDistance(other: Point) {
+        var x = this.x - other.x;
+        var y = this.y - other.y;
+        return Math.sqrt(x*x + y*y);
+    }
 }
 
 class Color {
@@ -93,7 +97,7 @@ class WebGLDrawer implements IDrawer {
 
     drawCircle(center: Point, radius: number, color: Color = Color.white) {
         var circleData = [];
-        var count = Math.max(8, radius / 2);
+        var count = Math.max(8, Math.ceil(radius / 2));
 
         for (var i = 0; i < count; ++i) {
             var theta = (i / count) * Math.PI * 2.0;

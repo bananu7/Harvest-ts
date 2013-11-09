@@ -12,8 +12,7 @@ function tick() {
     gl.clear(gl.COLOR_BUFFER_BIT);
     drawer.drawLine(new Point(10, 10), new Point(100, 100));
 
-    //drawer.drawCircle(new Point(200, 200), 20);
-    //drawer.drawCircle(new Point(250, 200), 30);
+    game.update();
     game.draw();
 }
 
