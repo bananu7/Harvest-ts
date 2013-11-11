@@ -36,6 +36,10 @@ span {
             background-color: #488ca3;
         }
 
+    #sidebar .active {
+        background-color: #488ca3;
+        color: white;
+    }
 
 .money {
     color: #ffd800;

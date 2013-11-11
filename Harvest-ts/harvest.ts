@@ -37,13 +37,18 @@ function randomInt(a: number, b: number): number {
 
 class Ui {
     static addButton(name: string, callback: (JQueryEventObject) => any) {
-        $("#units-ui").append(
-            $('<div>')
-                .html(name)
-                .addClass('button')
-                .addClass('Grid-cell')
-                .click(callback)
-            );
+        var newDiv = $('<div>');
+        newDiv
+            .html(name)
+            .addClass('button')
+            .addClass('Grid-cell')
+            .click((event) => {
+                $("#units-ui").children().removeClass("active");
+                newDiv.addClass("active");
+                callback(event);
+            });
+        
+        $("#units-ui").append(newDiv); 
     }
 
     static setDisplayedMoney(money: number) {
@@ -104,18 +109,14 @@ class Game {
         this.money -= unit.price;
     }
 
-    public query(location: Point, range: number, idFilter: number, kindFilter: string[]= []) {
-        var result: Actor[] = [];
-        this.objects.forEach((object) => {
-            if (object.position.getDistanceTo(location) <= range) {
-                if (object.getId() != idFilter) {
-                    if (kindFilter.indexOf(object.getKind()) > -1) {
-                        result.push(object);
-                    }
-                }
-            }
-        });
-        return result;
+    public query(location: Point, range: number, idFilter: number, kindFilter: string[] = []) {
+        return this.objects.filter((object) =>
+            (object.position.getDistanceTo(location) <= range)
+            &&
+            (object.getId() !== idFilter)
+            &&
+            (kindFilter.indexOf(object.getKind()) > -1)
+        );
     }
 }
 
@@ -149,7 +150,7 @@ module Units {
                 }
 
                 if (this.energy > 0) {
-                    this.energy = this.energy - 0.005;
+                    this.energy = this.energy - 0.025;
                 } else { // finished harvesting phase
                     // one rock point is converted into one $
                     target.energy = target.energy - 1;
