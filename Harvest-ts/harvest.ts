@@ -45,11 +45,16 @@ class Ui {
                 .click(callback)
             );
     }
+
+    static setDisplayedMoney(money: number) {
+        $("#money").html("$" + money);
+    }
 }
 
 class Game {
     objects: Actor[];
     clickMode: string = null;
+    money: number = 100;
 
     constructor() {
         this.objects = [];
@@ -76,6 +81,8 @@ class Game {
     public update() {
         this.objects.forEach((o) => o.update());
         this.objects = this.objects.filter((object) => !object.flaggedForDeletion());
+
+        Ui.setDisplayedMoney(this.money);
     }
 
     public addObject(object: Actor) {
@@ -83,21 +90,21 @@ class Game {
     }
 
     public mouseDown(position: Point) {
-        if (this.clickMode) {
-            this.addObject(new Units[this.clickMode](position));
-        }
+        if (!this.clickMode)
+            return;
+
+        var unit = Units[this.clickMode];
+        if (!unit)
+            throw "The selected unit type is not loaded";
+
+        if (unit.price > this.money)
+            return;
+
+        this.addObject(new Units[this.clickMode](position));
+        this.money -= unit.price;
     }
 
     public query(location: Point, range: number, idFilter: number, kindFilter: string[]= []) {
-        /*local function icontains(table, elem)
-            for k, v in ipairs(table) do
-                if v == elem then
-                    return true
-                end
-            end
-            return false
-        end*/
-
         var result: Actor[] = [];
         this.objects.forEach((object) => {
             if (object.position.getDistanceTo(location) <= range) {
@@ -112,12 +119,11 @@ class Game {
     }
 }
 
-//export query : 
-
 // Module
 module Units {
     export class Harvester extends Actor {
         static buildable = true;
+        static price = 15;
         public getKind(): string { return "harvester"; }
         public energy: number = 0;
         private target: Actor;
@@ -137,14 +143,21 @@ module Units {
             var target = this.target;
             var possibleTargets = ["rock"];
             if (target) {
-                if (target.energy > 0) {
-                    if (this.energy > 0) {
-                        // TODO : increase player money
-                        target.energy = target.energy - 1;
-                        this.energy = this.energy - 0.005;
-                    }
-                } else {
+                if (target.energy <= 0) { // rock depleted
                     this.target = null;
+                    return;
+                }
+
+                if (this.energy > 0) {
+                    this.energy = this.energy - 0.005;
+                } else { // finished harvesting phase
+                    // one rock point is converted into one $
+                    target.energy = target.energy - 1;
+                    game.money += 1;
+                    // reset the harvester
+                    this.target = null;
+                    // in case it got negative
+                    this.energy = 0;
                 }
             } else {
                 if (this.energy > 0) {
@@ -172,6 +185,7 @@ module Units {
 
     export class EnergyLink extends Actor {
         static buildable = true;
+        static price = 2;
         getKind(): string { return "energy_link"; }
         draw() {
             drawer.drawCircle(this.position, 8, new Color(0.8, 0.8, 0.2));
@@ -230,6 +244,7 @@ module Units {
 
     export class SolarPlant extends Actor {
         static buildable = true;
+        static price = 40;
         energy: number = 0;
         getKind(): string { return "solar_plant"; }
 

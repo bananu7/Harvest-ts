@@ -18,13 +18,6 @@ span {
 
     padding: 15px;
 }
-    #sidebar .money {
-        color: #ffd800;
-        /*font-size: 2em;*/
-        text-align: right;
-        float: right;
-    }
-
     #sidebar .Grid {
         /*display: flex;*/
     }
@@ -42,3 +35,13 @@ span {
         #sidebar .button:hover {
             background-color: #488ca3;
         }
+
+
+.money {
+    color: #ffd800;
+    /*font-size: 2em;*/
+    text-align: right;
+    float: right;
+}
+
+    
