@@ -262,4 +262,46 @@ module Units {
             }
         }
     }
+
+    export class Vehicle extends Actor {
+    }
+
+    export class Tank extends Vehicle {
+        getKind(): string {
+            return "tank";
+        }
+
+        private target: Actor;
+
+        draw() {
+            drawer.drawSquare(this.position, 40, new Color(0.572, 0.671, 0.302));
+        }
+
+        pickATarget() {
+            var possibleTargets = ["solar_plant", "energy_link", "harvester"];
+            var targets = game.query(this.position, 1000, 0, possibleTargets);
+
+            if (targets.length == 0)
+                return;
+
+            this.target = targets[randomInt(0, targets.length - 1)];
+        }
+
+        update() {
+            if (!this.target) {
+                this.pickATarget();
+            } else {
+                if (this.position.getDistanceTo(this.target.position) < 5) {
+                    this.target.flaggedForDeletion = (() => true);
+                    this.target = null;
+                    return;
+                }
+
+                // move towards target
+                var direction = this.position.getDirectionTo(this.target.position);
+                this.position.x = this.position.x + Math.cos(direction);
+                this.position.y = this.position.y + Math.sin(direction);
+            }
+        }
+    }
 }

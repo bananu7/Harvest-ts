@@ -29,21 +29,22 @@ class Color {
 interface IDrawer {
     drawCircle(center: Point, radius: number, color?: Color);
     drawLine(a: Point, b: Point, color?: Color);
+    drawSquare(center: Point, size: number, color?: Color);
 }
 
 class WebGLDrawer implements IDrawer {
-    vertCode  =
-        'attribute vec2 position;' +
-        'uniform mat4 viewMat;' +
-        'void main(void) {' +
-        '  gl_Position = viewMat * vec4(position, 0.0, 1.0);' +
-        '}';
+    vertCode =
+    'attribute vec2 position;' +
+    'uniform mat4 viewMat;' +
+    'void main(void) {' +
+    '  gl_Position = viewMat * vec4(position, 0.0, 1.0);' +
+    '}';
     fragCode =
-        'precision lowp float;' +
-        'uniform vec4 color;' +
-        'void main(void) {' +
-        '   gl_FragColor = color;' +
-        '}';
+    'precision lowp float;' +
+    'uniform vec4 color;' +
+    'void main(void) {' +
+    '   gl_FragColor = color;' +
+    '}';
     shaderProgram: WebGLProgram;
     viewMatrix: Float32Array;
     VBO: WebGLBuffer;
@@ -65,7 +66,7 @@ class WebGLDrawer implements IDrawer {
         this.gl.vertexAttribPointer(coordinatesVar, 2, this.gl.FLOAT, false, 0, 0);
     }
 
-    private setShaderColor(color : Color) {
+    private setShaderColor(color: Color) {
         var colorLocation = this.gl.getUniformLocation(this.shaderProgram, "color");
         this.gl.uniform4f(colorLocation, color.r, color.g, color.b, color.a);
     }
@@ -132,5 +133,23 @@ class WebGLDrawer implements IDrawer {
         this.setShaderColor(color);
 
         this.gl.drawArrays(gl.LINES, 0, 2);
+    }
+
+    drawSquare(center: Point, size: number, color: Color = Color.white) {
+        size /= 2;
+        var squareData = [
+            center.x - size, center.y - size,
+            center.x + size, center.y - size,
+            center.x + size, center.y + size,
+            center.x - size, center.y + size
+        ];
+
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.VBO);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(squareData), this.gl.STREAM_DRAW);
+
+        this.enableBindings();
+        this.setShaderColor(color);
+
+        this.gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
     }
 }
