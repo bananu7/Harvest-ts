@@ -6,16 +6,29 @@ declare var drawer: IDrawer;
 declare var ui: Ui;
 declare var game: Game;
 
-interface IActor {
-    position: Point;
-    energy: number;
+class Actor {
+    public energy: number;
 
-    getKind(): string;
-    flaggedForDeletion(): boolean;
+    constructor(public position: Point) {
+    }
 
-    draw();
-    update();
-    getId(): number;
+    getKind(): string {
+        throw "This method is abstract";
+    }
+    flaggedForDeletion(): boolean {
+        return false;
+    }
+    draw() {
+        //throw "This method is abstract";
+    }
+    update() {
+        //throw "This method is abstract";
+    }
+
+    private id: number;
+    public getId(): number {
+        return this.id;
+    }
 }
 
 function randomInt(a: number, b: number): number {
@@ -35,15 +48,25 @@ class Ui {
 }
 
 class Game {
-    objects: IActor[];
+    objects: Actor[];
     clickMode: string = null;
 
     constructor() {
         this.objects = [];
-        Ui.addButton("Harvester",
-            (event) => this.clickMode = Units.Harvester.prototype.getKind());
-        Ui.addButton("Rock",
-            (event) => this.clickMode = Units.Rock.prototype.getKind());
+        for (var unit in Units) {
+            (function (unit) { // bind unit to lambda scope
+                if (Units[unit].buildable) {
+                    Ui.addButton(unit,
+                        (event) => {
+                            game.clickMode = unit;
+                        });
+                }
+            })(unit);
+        }
+
+        for (var i = 0; i < 50; ++i) {
+            this.addObject(new Units.Rock(new Point(randomInt(50, 1250), randomInt(50, 750))));
+        }
     }
 
     public draw() {
@@ -55,18 +78,13 @@ class Game {
         this.objects = this.objects.filter((object) => !object.flaggedForDeletion());
     }
 
-    public addObject(object: IActor) {
+    public addObject(object: Actor) {
         this.objects.push(object);
     }
 
     public mouseDown(position: Point) {
-        switch (this.clickMode) {
-            case "harvester":
-                this.addObject(new Units.Harvester(position));
-                break;
-            case "rock":
-                this.addObject(new Units.Rock(position));
-                break;
+        if (this.clickMode) {
+            this.addObject(new Units[this.clickMode](position));
         }
     }
 
@@ -80,9 +98,9 @@ class Game {
             return false
         end*/
 
-        var result: IActor[] = [];
+        var result: Actor[] = [];
         this.objects.forEach((object) => {
-            if (object.position.getDistance(location) <= range) {
+            if (object.position.getDistanceTo(location) <= range) {
                 if (object.getId() != idFilter) {
                     if (kindFilter.indexOf(object.getKind()) > -1) {
                         result.push(object);
@@ -98,21 +116,14 @@ class Game {
 
 // Module
 module Units {
-    export class Harvester implements IActor {
-        private id: number;
-        public getId(): number {
-            return this.id;
-        }
-
+    export class Harvester extends Actor {
+        static buildable = true;
         public getKind(): string { return "harvester"; }
-        public energy: number = 1000;
-        private target: IActor;
+        public energy: number = 0;
+        private target: Actor;
 
         private _flaggedForDeletion: boolean = false;
         public flaggedForDeletion(): boolean { return this._flaggedForDeletion; }
-
-        constructor(public position: Point) {
-        }
 
         draw() {
             drawer.drawCircle(this.position, 10, new Color(0.314, 0.863, 0.471));
@@ -136,35 +147,103 @@ module Units {
                     this.target = null;
                 }
             } else {
-                var neighbours = game.query(this.position, 100, 0, possibleTargets)
-                if (neighbours.length > 0) {
-                    this.target = neighbours[randomInt(0, neighbours.length - 1)];
+                if (this.energy > 0) {
+                    var neighbours = game.query(this.position, 100, 0, possibleTargets)
+                    if (neighbours.length > 0) {
+                        this.target = neighbours[randomInt(0, neighbours.length - 1)];
+                    }
                 }
             }
         }
     }
 
-    export class Rock implements IActor {
-        private id: number;
-        public getId(): number {
-            return this.id;
-        }
-
+    export class Rock extends Actor {
         public flaggedForDeletion(): boolean { return this.energy <= 0; }
 
-        public energy: number;
-        constructor(public position: Point) {
-            this.energy = 1000;
-        }
+        public energy: number = 1000;
 
-        public getKind(): string {
+        getKind(): string {
             return "rock";
         }
-
         draw() {
             drawer.drawCircle(this.position, 15, new Color(0.8, 0.8, 0.8));
         }
+    }
+
+    export class EnergyLink extends Actor {
+        static buildable = true;
+        getKind(): string { return "energy_link"; }
+        draw() {
+            drawer.drawCircle(this.position, 8, new Color(0.8, 0.8, 0.2));
+        }
+    }
+
+    export class EnergyPacket extends Actor {
+        private _flaggedForDeletion: boolean = false;
+        public flaggedForDeletion(): boolean { return this._flaggedForDeletion; }
+
+        private target: Actor;
+        getKind(): string { return "energy_packet"; }
+
+        private pickATarget() {
+            var possibleTargets = ["harvester", "energy_link", "turret", "solar_plant"];
+            var neighbours = game.query(this.position, 200, 0, possibleTargets)
+                    if (neighbours.length > 0) {
+                this.target = neighbours[randomInt(0, neighbours.length - 1)];
+            }
+        }
+
+        draw() {
+            drawer.drawCircle(this.position, 3, new Color(1.0, 1.0, 0.5));
+        }
+
         update() {
+            var target = this.target
+
+            if (target) {
+                if (this.position.getDistanceTo(target.position) < 5) {
+                    var bounce = false;
+                    if (target.getKind() == 'energy_link' || target.getKind() == 'solar_plant') {
+                        bounce = true;
+                    } else if (target.getKind() == 'harvester' && target.energy > 0) {
+                        bounce = true;
+                    }/* else if (target.getKind() == 'turret' && target.energy > Turret.maxEnergy {
+                        bounce = true;
+                    }*/
+
+                    if (bounce) {
+                        this.pickATarget();
+                    } else {
+                        this._flaggedForDeletion = true
+                        target.energy = target.energy + 1
+                    }
+                } else {
+                    var direction = this.position.getDirectionTo(target.position);
+                    this.position.x = this.position.x + Math.cos(direction);
+                    this.position.y = this.position.y + Math.sin(direction);
+                }
+            } else {
+                this.pickATarget();
+            }
+        }
+    }
+
+    export class SolarPlant extends Actor {
+        static buildable = true;
+        energy: number = 0;
+        getKind(): string { return "solar_plant"; }
+
+        draw() {
+            drawer.drawCircle(this.position, 30, new Color(0.455, 0.157, 0.580));
+        }
+        update() {
+            if (this.energy > 100) {
+                this.energy = 0;
+                var p = new EnergyPacket(new Point(this.position.x, this.position.y));
+                game.addObject(p);
+            } else {
+                this.energy = this.energy + 1
+            }
         }
     }
 }

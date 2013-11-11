@@ -5,10 +5,14 @@
 class Point {
     constructor(public x: number, public y: number) { }
 
-    getDistance(other: Point) {
+    getDistanceTo(other: Point) {
         var x = this.x - other.x;
         var y = this.y - other.y;
         return Math.sqrt(x*x + y*y);
+    }
+
+    getDirectionTo(other: Point) {
+        return Math.atan2(other.y - this.y, other.x - this.x) 
     }
 }
 
