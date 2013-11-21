@@ -6,31 +6,6 @@ declare var drawer: IDrawer;
 declare var ui: Ui;
 declare var game: Game;
 
-class Actor {
-    public energy: number;
-
-    constructor(public position: Point) {
-    }
-
-    getKind(): string {
-        throw "This method is abstract";
-    }
-    flaggedForDeletion(): boolean {
-        return false;
-    }
-    draw() {
-        //throw "This method is abstract";
-    }
-    update() {
-        //throw "This method is abstract";
-    }
-
-    private id: number;
-    public getId(): number {
-        return this.id;
-    }
-}
-
 function randomInt(a: number, b: number): number {
     return Math.floor((Math.random() * b) + a);
 }
@@ -120,6 +95,49 @@ class Game {
     }
 }
 
+
+class Actor {
+    public energy: number;
+
+    constructor(public position: Point) {
+    }
+
+    getKind(): string {
+        throw "This method is abstract";
+    }
+    flaggedForDeletion(): boolean {
+        return false;
+    }
+    draw() {
+        //throw "This method is abstract";
+    }
+    update() {
+        //throw "This method is abstract";
+    }
+
+    private id: number;
+    public getId(): number {
+        return this.id;
+    }
+
+    // Behaviors
+    moveToTarget() {
+        var target = (<any>this).target;
+        if (!target)
+            throw "no target!";
+
+        var direction = this.position.getDirectionTo(target.position);
+        this.position.x += Math.cos(direction);
+        this.position.y += Math.sin(direction);
+    }
+    pickATarget(possibleTargets: string[], range: number/*, excludeSelf: boolean = true*/) {
+        var neighbours = game.query(this.position, range, /*this.id*/0, possibleTargets)
+        if (neighbours.length > 0) {
+            (<any>this).target = neighbours[randomInt(0, neighbours.length - 1)];
+        }
+    }
+}
+
 // Module
 module Units {
     export class Harvester extends Actor {
@@ -200,12 +218,11 @@ module Units {
         private target: Actor;
         getKind(): string { return "energy_packet"; }
 
-        private pickATarget() {
+        public pickATarget() {
             var possibleTargets = ["harvester", "energy_link", "turret", "solar_plant"];
-            var neighbours = game.query(this.position, 200, 0, possibleTargets)
-                    if (neighbours.length > 0) {
-                this.target = neighbours[randomInt(0, neighbours.length - 1)];
-            }
+            var range = 200;
+
+            super.pickATarget(possibleTargets, range);
         }
 
         draw() {
@@ -233,9 +250,7 @@ module Units {
                         target.energy = target.energy + 1
                     }
                 } else {
-                    var direction = this.position.getDirectionTo(target.position);
-                    this.position.x = this.position.x + Math.cos(direction);
-                    this.position.y = this.position.y + Math.sin(direction);
+                    this.moveToTarget();
                 }
             } else {
                 this.pickATarget();
@@ -279,12 +294,8 @@ module Units {
 
         pickATarget() {
             var possibleTargets = ["solar_plant", "energy_link", "harvester"];
-            var targets = game.query(this.position, 1000, 0, possibleTargets);
-
-            if (targets.length == 0)
-                return;
-
-            this.target = targets[randomInt(0, targets.length - 1)];
+            var range = 1000;
+            super.pickATarget(possibleTargets, range);
         }
 
         update() {
@@ -297,10 +308,7 @@ module Units {
                     return;
                 }
 
-                // move towards target
-                var direction = this.position.getDirectionTo(this.target.position);
-                this.position.x = this.position.x + Math.cos(direction);
-                this.position.y = this.position.y + Math.sin(direction);
+                this.moveToTarget();
             }
         }
     }

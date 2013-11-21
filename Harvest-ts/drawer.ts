@@ -132,7 +132,7 @@ class WebGLDrawer implements IDrawer {
         this.enableBindings();
         this.setShaderColor(color);
 
-        this.gl.drawArrays(gl.LINES, 0, 2);
+        this.gl.drawArrays(this.gl.LINES, 0, 2);
     }
 
     drawSquare(center: Point, size: number, color: Color = Color.white) {
@@ -150,6 +150,6 @@ class WebGLDrawer implements IDrawer {
         this.enableBindings();
         this.setShaderColor(color);
 
-        this.gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
+        this.gl.drawArrays(this.gl.TRIANGLE_FAN, 0, 4);
     }
 }
