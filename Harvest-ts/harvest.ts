@@ -50,7 +50,8 @@ class Game {
         }
 
         for (var i = 0; i < 50; ++i) {
-            this.addObject(new Units.Rock(new Point(randomInt(50, 1250), randomInt(50, 750))));
+            var place = new Point(randomInt(50, 1250), randomInt(50, 750));
+            this.addObject(new Units.Rock("terrain", place));
         }
     }
 
@@ -80,7 +81,7 @@ class Game {
         if (unit.price > this.money)
             return;
 
-        this.addObject(new Units[this.clickMode](position));
+        this.addObject(new Units[this.clickMode]("player", position));
         this.money -= unit.price;
     }
 
@@ -94,16 +95,26 @@ class Game {
         );
     }
 }
+module Game {
+    export enum QueryAllianceType {
+        ALLY,
+        ENEMY,
+        BOTH
+    }
+}
 
 
 class Actor {
     public energy: number;
 
-    constructor(public position: Point) {
+    constructor(private owner: string, public position: Point) {
     }
 
     getKind(): string {
         throw "This method is abstract";
+    }
+    getOwner():string { 
+        return this.owner; 
     }
     flaggedForDeletion(): boolean {
         return false;
@@ -270,7 +281,7 @@ module Units {
         update() {
             if (this.energy > 100) {
                 this.energy = 0;
-                var p = new EnergyPacket(new Point(this.position.x, this.position.y));
+                var p = new EnergyPacket(this.getOwner(), new Point(this.position.x, this.position.y));
                 game.addObject(p);
             } else {
                 this.energy = this.energy + 1
@@ -279,6 +290,17 @@ module Units {
     }
 
     export class Vehicle extends Actor {
+        energy: number = 0;
+
+        moveToTarget() {
+            // batteries depleted, can't move.
+            if (this.energy < 0)
+                return;
+            else {
+                this.energy -= 1; // TODO: actual engine efficiency
+                super.moveToTarget();
+            }
+        }
     }
 
     export class Tank extends Vehicle {
@@ -287,6 +309,11 @@ module Units {
         }
 
         private target: Actor;
+
+        constructor(owner: string, position: Point) {
+            super(owner, position);
+            this.energy = 100;
+        }
 
         draw() {
             drawer.drawSquare(this.position, 40, new Color(0.572, 0.671, 0.302));

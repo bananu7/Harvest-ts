@@ -39,7 +39,7 @@ window.onload = () => {
     drawer = new WebGLDrawer(gl);
 
     game = new Game;
-    game.addObject(new Units.Rock(new Point(400, 400)));
+//    game.addObject(new Units.Rock(new Point(400, 400)));
 
     tick();
 };
