@@ -32,14 +32,27 @@ window.onload = () => {
 
     gl = <WebGLRenderingContext> canvas.getContext('webgl');
     //gl = WebGLUtils.setupWebGL(canvas);
-    canvas.width = 1280;
-    canvas.height = 800;
     gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
 
-    drawer = new WebGLDrawer(gl);
+    drawer = new WebGLDrawer(gl, new Point(canvas.width, canvas.height));
 
     game = new Game;
-//    game.addObject(new Units.Rock(new Point(400, 400)));
+
+    var resize = function () {
+        var newX = $("#mainCanvas").width();
+        var newY = $("#mainCanvas").height();
+
+        game.screenSize.x = newX;
+        game.screenSize.y = newY;
+        drawer.resize(newX, newY);
+        canvas.width = newX;
+        canvas.height = newY;
+    };
+    window.addEventListener("resize", resize);
+
+    // important - initial sizing based on measurement.
+    resize();
 
     tick();
 };
+

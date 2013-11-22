@@ -7,7 +7,7 @@ declare var ui: Ui;
 declare var game: Game;
 
 function randomInt(a: number, b: number): number {
-    return Math.floor((Math.random() * b) + a);
+    return Math.floor((Math.random() * (b-a+1)) + a);
 }
 
 class Ui {
@@ -35,6 +35,7 @@ class Game {
     objects: Actor[];
     clickMode: string = null;
     money: number = 100;
+    screenSize: Point = new Point(1,1);
 
     constructor() {
         this.objects = [];
@@ -83,6 +84,18 @@ class Game {
 
         this.addObject(new Units[this.clickMode]("player", position));
         this.money -= unit.price;
+    }
+
+    public mouseOver(position: Point) {
+        if (position.x < 50) { // scroll left
+        }
+        else if (position.x > (this.screenSize.x - 50)) { // scroll right
+        }
+
+        if (position.y < 50) { // scroll up
+        }
+        else if (position.y > (this.screenSize.y - 50)) { // scroll down11
+        }
     }
 
     public query(location: Point, range: number, idFilter: number, kindFilter: string[] = []) {
@@ -144,7 +157,7 @@ class Actor {
     pickATarget(possibleTargets: string[], range: number/*, excludeSelf: boolean = true*/) {
         var neighbours = game.query(this.position, range, /*this.id*/0, possibleTargets)
         if (neighbours.length > 0) {
-            (<any>this).target = neighbours[randomInt(0, neighbours.length - 1)];
+            (<any>this).target = neighbours[randomInt(0, neighbours.length-1)];
         }
     }
 }
@@ -231,7 +244,7 @@ module Units {
 
         public pickATarget() {
             var possibleTargets = ["harvester", "energy_link", "turret", "solar_plant"];
-            var range = 200;
+            var range = 100;
 
             super.pickATarget(possibleTargets, range);
         }

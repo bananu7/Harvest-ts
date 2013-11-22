@@ -30,6 +30,8 @@ interface IDrawer {
     drawCircle(center: Point, radius: number, color?: Color);
     drawLine(a: Point, b: Point, color?: Color);
     drawSquare(center: Point, size: number, color?: Color);
+
+    resize(width: number, height: number);
 }
 
 class WebGLDrawer implements IDrawer {
@@ -48,14 +50,25 @@ class WebGLDrawer implements IDrawer {
     shaderProgram: WebGLProgram;
     viewMatrix: Float32Array;
     VBO: WebGLBuffer;
+    private screenSize: Point;
 
-    constructor(private gl: WebGLRenderingContext) {
+    constructor(private gl: WebGLRenderingContext, size: Point) {
         this.VBO = gl.createBuffer();
         this.gl.bindBuffer(gl.ARRAY_BUFFER, this.VBO);
 
-        this.viewMatrix = mat4.ortho(0, 1280, 800, 0, -1, 1);
+        this.screenSize = size;
 
         this.initShaders();
+    }
+
+    public resize(width: number, height: number) {
+        this.screenSize.x = width;
+        this.screenSize.y = height;
+
+        this.viewMatrix = mat4.ortho(0, this.screenSize.x, this.screenSize.y, 0, -1, 1);
+        var viewMatrixLocation = this.gl.getUniformLocation(this.shaderProgram, "viewMat");
+        this.gl.uniformMatrix4fv(viewMatrixLocation, false, this.viewMatrix);
+        this.gl.viewport(0, 0, width, height);
     }
 
     private enableBindings() {
@@ -96,8 +109,7 @@ class WebGLDrawer implements IDrawer {
 
         this.gl.useProgram(this.shaderProgram);
 
-        var viewMatrixLocation = this.gl.getUniformLocation(this.shaderProgram, "viewMat");
-        this.gl.uniformMatrix4fv(viewMatrixLocation, false, this.viewMatrix);
+        this.resize(this.screenSize.x, this.screenSize.y);
     }
 
     drawCircle(center: Point, radius: number, color: Color = Color.white) {

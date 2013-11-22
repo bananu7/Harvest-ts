@@ -12,6 +12,10 @@ span {
     float: right;
 }
 
+#mainCanvas {
+    width: 100%;
+}
+
 #sidebar {
     position: absolute;
     width: 300px;
@@ -60,7 +64,8 @@ span {
     border-left-color: #888;
     border-bottom-color: #444;
     border-radius: 10px;
-    /*visibility: hidden;*/
+    z-index: 100;
+    display: none;
 }
     #center-window div {
         border: 1px solid #ccc;
