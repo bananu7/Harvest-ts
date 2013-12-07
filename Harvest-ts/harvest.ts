@@ -102,6 +102,19 @@ class Game {
         position.x += this.screenOffset.x;
         position.y += this.screenOffset.y;
 
+        // collision test
+        var collidingWithCircle = function(position, size) {
+            return function(obj) {
+                var distance = obj.position.getDistanceTo(position);
+                var maxDistance = obj.getSize() + size;
+
+                return distance <= maxDistance;
+            }
+        };
+        var result = this.objects.filter(collidingWithCircle(position, Units[this.clickMode].prototype.getSize()));
+        if (result.length > 0)
+            return;
+
         this.addObject(new Units.Construction("player", position, this.clickMode));
         this.money -= unit.price;
     }
@@ -156,6 +169,9 @@ class Actor {
     getKind(): string {
         throw "This method is abstract";
     }
+    getSize(): number {
+        return 0;
+    }
     getOwner():string { 
         return this.owner; 
     }
@@ -203,6 +219,9 @@ module Units {
         }
 
         public getKind(): string { return "construction"; }
+        public getSize(): number {
+            return Units[this.building].prototype.getSize();
+        }
 
         update() {
             if (this.energy >= Units[this.building].price) {
@@ -212,7 +231,7 @@ module Units {
         }
 
         draw() {
-            drawer.drawSquare(this.position, 40, new Color(0.4, 0.4, 0.4));
+            drawer.drawSquare(this.position, Units[this.building].prototype.getSize()/0.717, new Color(0.4, 0.4, 0.4));
         }
     }
 
@@ -220,6 +239,7 @@ module Units {
         static buildable = true;
         static price = 15;
         public getKind(): string { return "harvester"; }
+        public getSize(): number { return 10; }
         public energy: number = 0;
         private target: Actor;
 
@@ -227,7 +247,7 @@ module Units {
         public flaggedForDeletion(): boolean { return this._flaggedForDeletion; }
 
         draw() {
-            drawer.drawCircle(this.position, 10, new Color(0.314, 0.863, 0.471));
+            drawer.drawCircle(this.position, this.getSize(), new Color(0.314, 0.863, 0.471));
             if (this.target) {
                 //if (this.energy > 0) {
                     drawer.drawLine(this.position, this.target.position, new Color(1.0, 1.0, 1.0));
@@ -273,8 +293,9 @@ module Units {
         getKind(): string {
             return "rock";
         }
+        getSize(): number { return 15; }
         draw() {
-            drawer.drawCircle(this.position, 15, new Color(0.8, 0.8, 0.8));
+            drawer.drawCircle(this.position, this.getSize(), new Color(0.8, 0.8, 0.8));
         }
     }
 
@@ -282,8 +303,9 @@ module Units {
         static buildable = true;
         static price = 2;
         getKind(): string { return "energy_link"; }
+        getSize(): number { return 8; }
         draw() {
-            drawer.drawCircle(this.position, 8, new Color(0.8, 0.8, 0.2));
+            drawer.drawCircle(this.position, this.getSize(), new Color(0.8, 0.8, 0.2));
         }
     }
 
@@ -293,6 +315,7 @@ module Units {
 
         private target: Actor;
         getKind(): string { return "energy_packet"; }
+        getSize(): number { return 3; }
 
         public pickATarget() {
             var possibleTargets = ["harvester", "energy_link", "turret", "solar_plant", "construction"];
@@ -302,11 +325,11 @@ module Units {
         }
 
         draw() {
-            drawer.drawCircle(this.position, 3, new Color(1.0, 1.0, 0.5));
+            drawer.drawCircle(this.position, this.getSize(), new Color(1.0, 1.0, 0.5));
         }
 
         update() {
-            var target = this.target
+            var target = this.target;
 
             if (target) {
                 if (this.position.getDistanceTo(target.position) < 5) {
@@ -339,9 +362,10 @@ module Units {
         static price = 40;
         energy: number = 0;
         getKind(): string { return "solar_plant"; }
+        getSize(): number { return 30; }
 
         draw() {
-            drawer.drawCircle(this.position, 30, new Color(0.455, 0.157, 0.580));
+            drawer.drawCircle(this.position, this.getSize(), new Color(0.455, 0.157, 0.580));
         }
         update() {
             if (this.energy > 100) {
@@ -371,6 +395,9 @@ module Units {
     export class Tank extends Vehicle {
         getKind(): string {
             return "tank";
+        }
+        getSize(): number {
+            return 28; // "radius" of a square
         }
 
         private target: Actor;
