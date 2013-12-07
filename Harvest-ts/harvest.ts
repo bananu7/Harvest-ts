@@ -36,6 +36,8 @@ class Game {
     clickMode: string = null;
     money: number = 100;
     screenSize: Point = new Point(1,1);
+    screenOffset: Point = new Point(0,0);
+    scrolling: Point = new Point(0,0);
 
     constructor() {
         this.objects = [];
@@ -62,18 +64,26 @@ class Game {
     }
 
     public draw() {
+        drawer.setDrawingOffset(this.screenOffset);
         this.objects.forEach((o) => o.draw());
     }
 
     public update() {
         this.objects.forEach((o) => o.update());
         this.objects = this.objects.filter((object) => !object.flaggedForDeletion());
+        this.screenOffset.x += this.scrolling.x;
+        this.screenOffset.y += this.scrolling.y;
 
         Ui.setDisplayedMoney(this.money);
     }
 
     public addObject(object: Actor) {
         this.objects.push(object);
+    }
+
+    public mouseOut() {
+        this.scrolling.x = 0;
+        this.scrolling.y = 0;
     }
 
     public mouseDown(position: Point) {
@@ -88,19 +98,33 @@ class Game {
             return;
 
         //this.addObject(new Units[this.clickMode]("player", position));
+
+        position.x += this.screenOffset.x;
+        position.y += this.screenOffset.y;
+
         this.addObject(new Units.Construction("player", position, this.clickMode));
         this.money -= unit.price;
     }
 
-    public mouseOver(position: Point) {
+    public mouseMove(position: Point) {
         if (position.x < 50) { // scroll left
+            this.scrolling.x = -5;
         }
         else if (position.x > (this.screenSize.x - 50)) { // scroll right
+            this.scrolling.x = 5;
+        }
+        else {
+            this.scrolling.x = 0;
         }
 
         if (position.y < 50) { // scroll up
+            this.scrolling.y = -5;
         }
         else if (position.y > (this.screenSize.y - 50)) { // scroll down11
+            this.scrolling.y = 5;
+        }
+        else {
+            this.scrolling.y = 0;
         }
     }
 

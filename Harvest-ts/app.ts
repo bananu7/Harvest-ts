@@ -31,8 +31,20 @@ window.onload = () => {
     }, false);
 
     canvas.addEventListener("mousemove", function (event) {
+        var x = event.x;
+        var y = event.y;
 
+        var canvas = document.getElementById("mainCanvas");
+
+        x -= canvas.offsetLeft;
+        y -= canvas.offsetTop;
+
+        game.mouseMove(new Point(x,y));
     }, false);
+
+    canvas.addEventListener("mouseout", function() {
+        game.mouseOut();
+    });
 
     gl = <WebGLRenderingContext> canvas.getContext('webgl');
     //gl = WebGLUtils.setupWebGL(canvas);
