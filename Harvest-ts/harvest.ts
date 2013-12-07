@@ -54,6 +54,11 @@ class Game {
             var place = new Point(randomInt(50, 1250), randomInt(50, 750));
             this.addObject(new Units.Rock("terrain", place));
         }
+
+        // first solar plants
+        this.addObject(new Units.SolarPlant("player", new Point(500, 500)));
+        this.addObject(new Units.SolarPlant("player", new Point(550, 550)));
+        this.addObject(new Units.SolarPlant("player", new Point(450, 550)));
     }
 
     public draw() {
@@ -82,7 +87,8 @@ class Game {
         if (unit.price > this.money)
             return;
 
-        this.addObject(new Units[this.clickMode]("player", position));
+        //this.addObject(new Units[this.clickMode]("player", position));
+        this.addObject(new Units.Construction("player", position, this.clickMode));
         this.money -= unit.price;
     }
 
@@ -120,7 +126,7 @@ module Game {
 class Actor {
     public energy: number;
 
-    constructor(private owner: string, public position: Point) {
+    constructor(public owner: string, public position: Point) {
     }
 
     getKind(): string {
@@ -164,6 +170,28 @@ class Actor {
 
 // Module
 module Units {
+
+    export class Construction extends Actor {
+        public energy: number = 0;
+
+        constructor(owner: string, position: Point, public building: string) {
+            super(owner, position);
+        }
+
+        public getKind(): string { return "construction"; }
+
+        update() {
+            if (this.energy >= Units[this.building].price) {
+                game.addObject(new Units[this.building](this.owner, this.position));
+                this.flaggedForDeletion = () => true;
+            }
+        }
+
+        draw() {
+            drawer.drawSquare(this.position, 40, new Color(0.4, 0.4, 0.4));
+        }
+    }
+
     export class Harvester extends Actor {
         static buildable = true;
         static price = 15;
@@ -243,7 +271,7 @@ module Units {
         getKind(): string { return "energy_packet"; }
 
         public pickATarget() {
-            var possibleTargets = ["harvester", "energy_link", "turret", "solar_plant"];
+            var possibleTargets = ["harvester", "energy_link", "turret", "solar_plant", "construction"];
             var range = 100;
 
             super.pickATarget(possibleTargets, range);
@@ -270,7 +298,7 @@ module Units {
                     if (bounce) {
                         this.pickATarget();
                     } else {
-                        this._flaggedForDeletion = true
+                        this._flaggedForDeletion = true;
                         target.energy = target.energy + 1
                     }
                 } else {

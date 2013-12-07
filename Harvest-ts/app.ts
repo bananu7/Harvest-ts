@@ -2,7 +2,7 @@
 ///<reference path="harvest.ts" />
 
 var gl;
-var game;
+var game : Game;
 var drawer: IDrawer;
 
 function tick() {
@@ -28,6 +28,10 @@ window.onload = () => {
         y -= canvas.offsetTop;
 
         game.mouseDown(new Point(x, y));
+    }, false);
+
+    canvas.addEventListener("mousemove", function (event) {
+
     }, false);
 
     gl = <WebGLRenderingContext> canvas.getContext('webgl');
