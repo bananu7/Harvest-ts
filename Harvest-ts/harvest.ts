@@ -106,40 +106,47 @@ class Game {
         this.scrolling.y = 0;
     }
 
-    public mouseDown(position: Point) {
-        if (!this.clickMode)
-            return;
+    public mouseDown(position: Point, button: number = 0) {
+        switch (button) {
+        case 0:
+            if (!this.clickMode)
+                return;
 
-        var unit = Units[this.clickMode];
-        if (!unit)
-            throw "The selected unit type is not loaded";
+            var unit = Units[this.clickMode];
+            if (!unit)
+                throw "The selected unit type is not loaded";
 
-        if (unit.price > this.money)
-            return;
+            if (unit.price > this.money)
+                return;
 
-        //this.addObject(new Units[this.clickMode]("player", position));
+            //this.addObject(new Units[this.clickMode]("player", position));
 
-        position.x += this.screenOffset.x;
-        position.y += this.screenOffset.y;
+            position.x += this.screenOffset.x;
+            position.y += this.screenOffset.y;
 
-        // collision test
-        var collidingWithCircle = function(position, size) {
-            return function(obj) {
-                if ((size <= 0) || (obj.getSize() <= 0))
-                    return false;
+            // collision test
+            var collidingWithCircle = function(position, size) {
+                return function(obj) {
+                    if ((size <= 0) || (obj.getSize() <= 0))
+                        return false;
 
-                var distance = obj.position.getDistanceTo(position);
-                var maxDistance = obj.getSize() + size;
+                    var distance = obj.position.getDistanceTo(position);
+                    var maxDistance = obj.getSize() + size;
 
-                return distance <= maxDistance;
-            }
-        };
-        var result = this.objects.filter(collidingWithCircle(position, Units[this.clickMode].prototype.getSize()));
-        if (result.length > 0)
-            return;
+                    return distance <= maxDistance;
+                }
+            };
+            var result = this.objects.filter(collidingWithCircle(position, Units[this.clickMode].prototype.getSize()));
+            if (result.length > 0)
+                return;
 
-        this.addObject(new Units.Construction("player", position, this.clickMode));
-        this.money -= unit.price;
+            this.addObject(new Units.Construction("player", position, this.clickMode));
+            this.money -= unit.price;
+            break;
+        case 2:
+            this.clickMode = "";
+            break;
+        }
     }
 
     public mouseMove(position: Point) {

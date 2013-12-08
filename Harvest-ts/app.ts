@@ -29,7 +29,7 @@ window.onload = () => {
         x -= canvas.offsetLeft;
         y -= canvas.offsetTop;
 
-        game.mouseDown(new Point(x, y));
+        game.mouseDown(new Point(x, y), event.button);
     }, false);
 
     canvas.addEventListener("mousemove", function (event) {
