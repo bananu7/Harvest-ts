@@ -226,6 +226,11 @@ class Actor {
             (<any>this).target = neighbours[randomInt(0, neighbours.length-1)];
         }
     }
+
+    receiveEnergy(): boolean {
+        this.energy += 1;
+        return true;
+    }
 }
 
 // Module
@@ -266,6 +271,15 @@ module Units {
         private _flaggedForDeletion: boolean = false;
         public flaggedForDeletion(): boolean { return this._flaggedForDeletion; }
 
+        receiveEnergy():boolean {
+            if (this.energy > 0)
+                return false;
+            else {
+                this.energy = 1;
+                return true;
+            }
+        }
+
         draw() {
             drawer.drawCircle(this.position, this.getSize(), new Color(0.314, 0.863, 0.471));
             if (this.target) {
@@ -280,6 +294,7 @@ module Units {
             if (target) {
                 if (target.energy <= 0) { // rock depleted
                     this.target = null;
+                    // does the harvester inner energy need to be zeroed too?
                     return;
                 }
 
@@ -296,10 +311,7 @@ module Units {
                 }
             } else {
                 if (this.energy > 0) {
-                    var neighbours = game.query(this.position, 100, 0, possibleTargets)
-                    if (neighbours.length > 0) {
-                        this.target = neighbours[randomInt(0, neighbours.length - 1)];
-                    }
+                    super.pickATarget(possibleTargets, 100);
                 }
             }
         }
@@ -322,6 +334,7 @@ module Units {
     export class EnergyLink extends Actor {
         static buildable = true;
         static price = 2;
+        receiveEnergy():boolean { return false; }
         getKind(): string { return "energy_link"; }
         getSize(): number { return 8; }
         draw() {
@@ -352,20 +365,11 @@ module Units {
 
             if (target) {
                 if (this.position.getDistanceTo(target.position) < 5) {
-                    var bounce = false;
-                    if (target.getKind() == 'energy_link' || target.getKind() == 'solar_plant') {
-                        bounce = true;
-                    } else if (target.getKind() == 'harvester' && target.energy > 0) {
-                        bounce = true;
-                    }/* else if (target.getKind() == 'turret' && target.energy > Turret.maxEnergy {
-                        bounce = true;
-                    }*/
-
-                    if (bounce) {
-                        this.pickATarget();
-                    } else {
+                    if (target.receiveEnergy()) {
                         this._flaggedForDeletion = true;
-                        target.energy = target.energy + 1
+                    }
+                    else {// bounced
+                        this.pickATarget();
                     }
                 } else {
                     this.moveToTarget();
@@ -382,6 +386,7 @@ module Units {
         energy: number = 0;
         getKind(): string { return "solar_plant"; }
         getSize(): number { return 30; }
+        receiveEnergy(): boolean { return false; }
 
         draw() {
             drawer.drawCircle(this.position, this.getSize(), new Color(0.455, 0.157, 0.580));
@@ -392,8 +397,40 @@ module Units {
                 var p = new EnergyPacket(this.getOwner(), new Point(this.position.x, this.position.y));
                 game.addObject(p);
             } else {
-                this.energy = this.energy + 1
+                this.energy += 1;
             }
+        }
+    }
+
+    export class Turret extends Actor {
+        static buildable = true;
+        static price = 20;
+        energy: number = 0;
+        target: Actor;
+        getKind(): string { return "turret"; }
+        getSize(): number { return 15; }
+
+        draw() {
+            drawer.drawCircle(this.position, this.getSize(), new Color(0.9, 0.3, 0.4));
+        }
+        update() {
+            var target = this.target;
+            if (this.energy > 0) {
+
+                if (target) {
+                    target.flaggedForDeletion = () => true;
+                    this.energy -= 1;
+                } else {
+                    var targets = game.query(this.position, 200, this.getId());
+                    // exclude friendly units
+                    // TODO player alliances
+                    targets = targets.filter((t) => (<Actor>t).getOwner() != this.owner);
+                    if (targets.length > 0) {
+                        (<any>this).target = targets[randomInt(0, targets.length-1)];
+                    }
+                }
+            }
+
         }
     }
 
