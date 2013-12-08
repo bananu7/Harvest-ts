@@ -12,6 +12,7 @@
 [Rr]elease/
 x64/
 build/
+dist/
 [Bb]in/
 [Oo]bj/
 
@@ -154,3 +155,7 @@ $RECYCLE.BIN/
 
 # Mac desktop service store files
 .DS_Store
+
+
+node_modules
+/Harvest-ts/*.js

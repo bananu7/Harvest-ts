@@ -1,0 +1,13 @@
+{
+  "name": "Harvest-ts",
+  "description": "Yet another platform for Harvest, now for web.",
+  "version": "0.0.1",
+  "dependencies": {
+    "grunt": "~0.4.2",
+    "grunt-contrib-connect": "~0.5.0",
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-typescript": "~0.2.6",
+    "connect-livereload": "~0.3.0"
+  },
+  "devDependencies": {}
+}
