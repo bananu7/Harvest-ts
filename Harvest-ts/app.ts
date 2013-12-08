@@ -56,8 +56,9 @@ window.onload = () => {
     drawer = new WebGLDrawer(gl, new Point(canvas.width, canvas.height));
 
     var resize = function () {
-        var newX = $("#mainCanvas").width();
-        var newY = $("#mainCanvas").height();
+        var mainCanvas = $("#mainCanvas");
+        var newX = mainCanvas.width();
+        var newY = mainCanvas.height();
 
         game.screenSize.x = newX;
         game.screenSize.y = newY;
@@ -72,4 +73,10 @@ window.onload = () => {
 
     tick();
 };
+
+function showModalWindow(name:string) {
+    $("#center-window").children("div").hide();
+    $("#" + name).show();
+    $("#center-window").show();
+}
 

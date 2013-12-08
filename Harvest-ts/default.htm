@@ -28,13 +28,20 @@
         </div>
         <div id="tech-pane" class="sidebar-pane">
         </div>
-        <div class="Grid-cell" onclick="$('#center-window').show();">Blueprints</div>
+        <div class="Grid-cell" onclick="showModalWindow('blueprint-editor')">Blueprints</div>
+        <div class="Grid-cell" onclick="showModalWindow('menu')">Main Menu</div>
     </div>
     <div id="center-window">
-        <div id="blueprint-editor">
+        <img style="background-color: red; width: 40px; height: 40px; float:right; margin-top:-40px;" src="//:0"
+             onclick="$('#center-window').hide();" />
+        <div id="menu" style="display:none">
+            <h1>Menu</h1>
+            <ul>
+                <li onclick="game.startNewGame();$('#center-window').hide()">New game</li>
+            </ul>
+        </div>
+        <div id="blueprint-editor" style="display:none">
             <h1>Blueprint editor</h1>
-            <img style="background-color: red; width: 40px; height: 40px; float:right; margin-top: -70px;" src="//:0"
-                 onclick="$('#center-window').hide();" />
             <div id="component-list">
                 <div class="Grid-cell">Main frame</div>
                 <div class="Grid-cell">Engine</div>

@@ -52,16 +52,22 @@ class Game {
                 }
             })(unit);
         }
+    }
 
+    public startNewGame() {
+        this.objects = [];
         for (var i = 0; i < 50; ++i) {
             var place = new Point(randomInt(50, 1250), randomInt(50, 750));
             this.addObject(new Units.Rock("terrain", place));
         }
+        this.screenOffset.x = this.screenOffset.y = 0;
 
         // first solar plants
         this.addObject(new Units.SolarPlant("player", new Point(500, 500)));
         this.addObject(new Units.SolarPlant("player", new Point(550, 550)));
         this.addObject(new Units.SolarPlant("player", new Point(450, 550)));
+
+        this.money = 100;
     }
 
     public draw() {
