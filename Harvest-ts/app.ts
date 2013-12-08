@@ -11,7 +11,6 @@ function tick() {
    
     gl.clearColor(0.3, 0.3, 0.3, 1.);
     gl.clear(gl.COLOR_BUFFER_BIT);
-    drawer.drawLine(new Point(10, 10), new Point(100, 100));
 
     game.update();
     game.draw();
