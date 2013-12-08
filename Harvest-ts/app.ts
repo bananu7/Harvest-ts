@@ -8,7 +8,7 @@ var drawer: IDrawer;
 
 function tick() {
     window.requestAnimationFrame(tick);
-   
+
     gl.clearColor(0.3, 0.3, 0.3, 1.);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
@@ -21,8 +21,8 @@ window.onload = () => {
 
     var canvas = <any>document.getElementById('mainCanvas');
     canvas.addEventListener("mousedown", function (event) {
-        var x = event.x;
-        var y = event.y;
+        var x = event.clientX;
+        var y = event.clientY;
 
         var canvas = document.getElementById("mainCanvas");
 
@@ -33,8 +33,8 @@ window.onload = () => {
     }, false);
 
     canvas.addEventListener("mousemove", function (event) {
-        var x = event.x;
-        var y = event.y;
+        var x = event.clientX;
+        var y = event.clientY;
 
         var canvas = document.getElementById("mainCanvas");
 
