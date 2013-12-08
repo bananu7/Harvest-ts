@@ -16,6 +16,11 @@ span {
 #mainCanvas {
     width: 70%;
     box-sizing: border-box;
+    display: none;
+}
+
+.button {
+    cursor: pointer;
 }
 
 #sidebar {
@@ -67,7 +72,6 @@ span {
     border-bottom-color: #444;
     border-radius: 10px;
     z-index: 100;
-    display: none;
 }
     #center-window div {
         border: 1px solid #ccc;
