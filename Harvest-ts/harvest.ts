@@ -119,6 +119,9 @@ class Game {
         // collision test
         var collidingWithCircle = function(position, size) {
             return function(obj) {
+                if ((size <= 0) || (obj.getSize() <= 0))
+                    return false;
+
                 var distance = obj.position.getDistanceTo(position);
                 var maxDistance = obj.getSize() + size;
 
