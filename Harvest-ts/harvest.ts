@@ -38,6 +38,7 @@ class Game {
     screenSize: Point = new Point(1,1);
     screenOffset: Point = new Point(0,0);
     scrolling: Point = new Point(0,0);
+    mousePosition: Point = new Point(0,0);
 
     constructor() {
         this.objects = [];
@@ -66,6 +67,19 @@ class Game {
     public draw() {
         drawer.setDrawingOffset(this.screenOffset);
         this.objects.forEach((o) => o.draw());
+
+        if (this.clickMode) {
+            var p = new Point(this.mousePosition.x + this.screenOffset.x,
+                              this.mousePosition.y + this.screenOffset.y);
+
+            // energy hop circle
+            drawer.drawCircle(p, 150, Color.white, false);
+
+            // harvest circle
+            if (this.clickMode == "Harvester") {
+                drawer.drawCircle(p, 100, new Color(0.314, 0.863, 0.471), false);
+            }
+        }
     }
 
     public update() {
@@ -120,6 +134,9 @@ class Game {
     }
 
     public mouseMove(position: Point) {
+        this.mousePosition.x = position.x;
+        this.mousePosition.y = position.y;
+
         if (position.x < 50) { // scroll left
             this.scrolling.x = -5;
         }
@@ -315,17 +332,16 @@ module Units {
 
         private target: Actor;
         getKind(): string { return "energy_packet"; }
-        getSize(): number { return 3; }
 
         public pickATarget() {
             var possibleTargets = ["harvester", "energy_link", "turret", "solar_plant", "construction"];
-            var range = 100;
+            var range = 150;
 
             super.pickATarget(possibleTargets, range);
         }
 
         draw() {
-            drawer.drawCircle(this.position, this.getSize(), new Color(1.0, 1.0, 0.5));
+            drawer.drawCircle(this.position, 3, new Color(1.0, 1.0, 0.5));
         }
 
         update() {

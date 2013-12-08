@@ -1,6 +1,7 @@
 ///<reference path="drawer.ts" />
 ///<reference path="harvest.ts" />
 
+var WebGLUtils;
 var gl;
 var game : Game;
 var drawer: IDrawer;
@@ -17,6 +18,8 @@ function tick() {
 }
 
 window.onload = () => {
+    game = new Game;
+
     var canvas = <any>document.getElementById('mainCanvas');
     canvas.addEventListener("mousedown", function (event) {
         var x = event.x;
@@ -46,13 +49,12 @@ window.onload = () => {
         game.mouseOut();
     });
 
-    gl = <WebGLRenderingContext> canvas.getContext('webgl');
+    //gl = <WebGLRenderingContext> canvas.getContext('webgl');
+    gl = <WebGLRenderingContext> WebGLUtils.create3DContext(canvas);
     //gl = WebGLUtils.setupWebGL(canvas);
     gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
 
     drawer = new WebGLDrawer(gl, new Point(canvas.width, canvas.height));
-
-    game = new Game;
 
     var resize = function () {
         var newX = $("#mainCanvas").width();

@@ -27,7 +27,7 @@ class Color {
 }
 
 interface IDrawer {
-    drawCircle(center: Point, radius: number, color?: Color);
+    drawCircle(center: Point, radius: number, color?: Color, filled?: boolean);
     drawLine(a: Point, b: Point, color?: Color);
     drawSquare(center: Point, size: number, color?: Color);
     setDrawingOffset(offset: Point);
@@ -127,7 +127,7 @@ class WebGLDrawer implements IDrawer {
         this.resize(this.screenSize.x, this.screenSize.y);
     }
 
-    drawCircle(center: Point, radius: number, color: Color = Color.white) {
+    drawCircle(center: Point, radius: number, color: Color = Color.white, filled: boolean = true) {
         var circleData = [];
         var count = Math.max(8, Math.ceil(radius / 2));
 
@@ -146,7 +146,11 @@ class WebGLDrawer implements IDrawer {
         this.enableBindings();
         this.setShaderColor(color);
 
-        this.gl.drawArrays(this.gl.TRIANGLE_FAN, 0, count);
+        if (filled)
+            this.gl.drawArrays(this.gl.TRIANGLE_FAN, 0, count);
+        else {
+            this.gl.drawArrays(this.gl.LINE_LOOP, 0, count);
+        }
     }
 
     drawLine(a: Point, b: Point, color: Color = Color.white) {
