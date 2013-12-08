@@ -40,3 +40,4 @@ The app has been tested and should work fine on:
 
 * Chrome 31
 * Chrome Canary 33
+* Firefox 28.0a1
