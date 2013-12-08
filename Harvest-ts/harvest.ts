@@ -22,8 +22,8 @@ class Ui {
                 newDiv.addClass("active");
                 callback(event);
             });
-        
-        $("#units-ui").append(newDiv); 
+
+        $("#units-ui").append(newDiv);
     }
 
     static setDisplayedMoney(money: number) {
@@ -205,8 +205,8 @@ class Actor {
     getSize(): number {
         return 0;
     }
-    getOwner():string { 
-        return this.owner; 
+    getOwner():string {
+        return this.owner;
     }
     flaggedForDeletion(): boolean {
         return false;
@@ -251,6 +251,7 @@ module Units {
 
     export class Construction extends Actor {
         public energy: number = 0;
+        private constructedBuilding: Actor = null;
 
         constructor(owner: string, position: Point, public building: string) {
             super(owner, position);
@@ -263,8 +264,17 @@ module Units {
 
         update() {
             if (this.energy >= Units[this.building].price) {
-                game.addObject(new Units[this.building](this.owner, this.position));
+                this.constructedBuilding = new Units[this.building](this.owner, this.position);
+                game.addObject(this.constructedBuilding);
                 this.flaggedForDeletion = () => true;
+            }
+        }
+
+        receiveEnergy(): boolean {
+            if (this.constructedBuilding) {
+                return this.constructedBuilding.receiveEnergy();
+            } else {
+                return super.receiveEnergy();
             }
         }
 
