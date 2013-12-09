@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>TypeScript HTML App</title>
+    <link rel="stylesheet" href="app.css" type="text/css" />
+    <script src="lib/webgl-utils.js"></script>
+    <script src="drawer.js"></script>
+    <script src="harvest.js"></script>
+    <script src="app.js"></script>
+    <script src="lib/gl-matrix.js"></script>
+    <script src="lib/jquery.js"></script>
+</head>
+<body>
+    <h1>Harvest</h1>
+    <div id="content" oncontextmenu="return false;">
+        <canvas id="mainCanvas"></canvas>
+    </div>
+    <div id="sidebar">
+        <div id="stuff-pane" class="sidebar-pane">
+            <div class="button Grid-cell" onclick="showModalWindow('menu')">Main Menu</div>
+            <div class="button Grid-cell" onclick="showModalWindow('blueprint-editor')">Blueprints</div>
+        </div>
+        <div id="units-pane" class="sidebar-pane">
+            <h1>Units</h1>
+            <div id="money" class="money">$0</div>
+            <br />
+            <div class="Grid" id="units-ui">
+            </div>
+            <div class="button Grid-cell" onclick="game.addObject(new Units.Tank('ai', new Point(200, 200)));">SPAWN TANK</div>
+        </div>
+    </div>
+    <div id="center-window">
+        <img style="background-color: red; width: 40px; height: 40px; float:right; margin-top:-40px;" src="//:0"
+             onclick="$('#center-window').hide();" />
+        <div id="menu">
+            <h1>Main Menu</h1>
+            <ul>
+                <li onclick="game.startNewGame();$('#center-window').hide();$('#mainCanvas').show();" class="button"><h3>New game</h3></li>
+            </ul>
+        </div>
+        <div id="blueprint-editor" style="display:none">
+            <h1>Blueprint editor</h1>
+            <div id="component-list">
+                <div class="Grid-cell">Main frame</div>
+                <div class="Grid-cell">Engine</div>
+                <div class="Grid-cell">Lazor</div>
+            </div>
+            <div id="component-detail">
+                Name
+                <span class="right">Level</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

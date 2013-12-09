@@ -1,0 +1,110 @@
+﻿body
+{
+    font-family: 'Segoe UI', sans-serif;
+    padding: 0px;
+    background-image: url("img/star-space-tile.jpg");
+}
+
+span {
+    font-style: italic
+}
+
+.right {
+    float: right;
+}
+
+#mainCanvas {
+    width: 70%;
+    box-sizing: border-box;
+    display: none;
+}
+
+.button {
+    cursor: pointer;
+}
+
+#sidebar {
+    position: absolute;
+    width: 300px;
+    height: 80%;
+    right: 10px;
+    top: 0px;
+
+    background-color: #63b7d3;
+
+    padding: 15px;
+}
+    #sidebar .Grid {
+        /*display: flex;*/
+    }
+
+    #sidebar .Grid-cell {
+        flex: 1 0 auto;
+    }
+
+    #sidebar .button {
+        background-color: #5599b0;
+        margin: 10px;
+        padding: 10px;
+    }
+
+        #sidebar .button:hover {
+            background-color: #488ca3;
+        }
+
+    #sidebar .active {
+        background-color: #488ca3;
+        text-shadow: black 1px 1px;
+        color: white;
+    }
+
+#center-window {
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    width: 60%;
+    height: 70%;
+    background-color: #488ca3;
+
+    padding: 20px;
+    border: 10px solid #666;
+    border-top-color: #aaa;
+    border-left-color: #888;
+    border-bottom-color: #444;
+    border-radius: 10px;
+    z-index: 100;
+}
+    #center-window div {
+        border: 1px solid #ccc;
+        margin-bottom: 5px;
+        padding: 20px;
+    }
+
+#blueprint-editor {
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+#component-list {
+    float: left;
+    width: 45%;
+    min-height: 400px;
+    box-sizing: border-box;
+}
+#component-detail {
+    float: right;
+    width: 45%;
+    min-height: 400px;
+    box-sizing: border-box;
+}
+
+.money {
+    color: #ffd800;
+    /*font-size: 2em;*/
+    text-align: right;
+    float: right;
+}
+
+    
