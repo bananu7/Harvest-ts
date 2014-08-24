@@ -38,7 +38,7 @@ class Game {
     screenSize: Point = new Point(1,1);
     screenOffset: Point = new Point(0,0);
     scrolling: Point = new Point(0,0);
-    mousePosition: Point = new Point(0,0);
+    mousePosition: Point = new Point(0, 0);
 
     constructor() {
         this.objects = [];
@@ -147,6 +147,19 @@ class Game {
             this.clickMode = "";
             break;
         }
+    }
+
+    public touchStart(position: Point) {
+        this.mousePosition = position;
+    }
+    public touchMove(position: Point) {
+        var diffX = position.x - this.mousePosition.x;
+        var diffY = position.y - this.mousePosition.y;
+
+        this.screenOffset.x -= diffX;
+        this.screenOffset.y -= diffY;
+
+        this.mousePosition = position;
     }
 
     public mouseMove(position: Point) {

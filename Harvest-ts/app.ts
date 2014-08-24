@@ -16,32 +16,74 @@ function tick() {
     game.draw();
 }
 
+function fullscreen() {
+    var elem = <any>document.getElementById("content");
+    console.log(elem);
+    if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+    } else if (elem.msRequestFullscreen) {
+        elem.msRequestFullscreen();
+    } else if (elem.mozRequestFullScreen) {
+        elem.mozRequestFullScreen();
+    } else if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen();
+    } else if (elem.webkitRequestFullScreen) {
+        elem.webkitRequestFullScreen();
+    }
+    elem.style.width = "100%";
+    elem.style.height = "100%";
+    resize();
+}
+
+function resize () {
+    var canvas = <any>document.getElementById('mainCanvas');
+    var newX = canvas.clientWidth;
+    var newY = canvas.clientHeight;
+
+    game.screenSize.x = newX;
+    game.screenSize.y = newY;
+    drawer.resize(newX, newY);
+    canvas.width = newX;
+    canvas.height = newY;
+};
+
 window.onload = () => {
     game = new Game;
+
+    var offsetToCanvasPos = function (x: number, y: number): Point {
+        var canvas = document.getElementById("mainCanvas");
+
+        x -= canvas.offsetLeft;
+        y -= canvas.offsetTop;
+
+        return new Point(x, y);
+    };
 
     var canvas = <any>document.getElementById('mainCanvas');
     canvas.addEventListener("mousedown", function (event) {
         var x = event.clientX;
         var y = event.clientY;
-
-        var canvas = document.getElementById("mainCanvas");
-
-        x -= canvas.offsetLeft;
-        y -= canvas.offsetTop;
-
-        game.mouseDown(new Point(x, y), event.button);
+        game.mouseDown(offsetToCanvasPos(x, y), event.button);
     }, false);
 
     canvas.addEventListener("mousemove", function (event) {
         var x = event.clientX;
         var y = event.clientY;
+        game.mouseMove(offsetToCanvasPos(x, y));
+    }, false);
 
-        var canvas = document.getElementById("mainCanvas");
-
-        x -= canvas.offsetLeft;
-        y -= canvas.offsetTop;
-
-        game.mouseMove(new Point(x,y));
+    canvas.addEventListener('touchstart', function (event) {
+        var touch = event.touches[0];
+        var x = touch.clientX;
+        var y = touch.clientY;
+        game.touchStart(offsetToCanvasPos(x, y));
+    }, false);
+    canvas.addEventListener('touchmove', function (event) {
+        var touch = event.touches[0];
+        var x = touch.clientX;
+        var y = touch.clientY;
+        game.touchMove(offsetToCanvasPos(x, y));
+        event.preventDefault();
     }, false);
 
     canvas.addEventListener("mouseout", function() {
@@ -55,17 +97,6 @@ window.onload = () => {
 
     drawer = new WebGLDrawer(gl, new Point(canvas.width, canvas.height));
 
-    var resize = function () {
-        var mainCanvas = $("#mainCanvas");
-        var newX = mainCanvas.width();
-        var newY = mainCanvas.height();
-
-        game.screenSize.x = newX;
-        game.screenSize.y = newY;
-        drawer.resize(newX, newY);
-        canvas.width = newX;
-        canvas.height = newY;
-    };
     window.addEventListener("resize", resize);
 
     // important - initial sizing based on measurement.

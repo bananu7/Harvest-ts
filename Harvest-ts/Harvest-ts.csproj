@@ -17,7 +17,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="app.css" />
-    <Content Include="default.htm" />
+    <Content Include="index.html" />
     <Content Include="lib\gl-matrix.js" />
     <Content Include="lib\jquery.js" />
     <Content Include="web.config" />
@@ -34,9 +34,11 @@
   <ItemGroup>
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
+      <SubType>Designer</SubType>
     </None>
     <None Include="web.Release.config">
       <DependentUpon>web.config</DependentUpon>
+      <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <PropertyGroup>
